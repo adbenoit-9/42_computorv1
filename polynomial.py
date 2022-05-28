@@ -2,7 +2,6 @@ from parsing import parse_polynomial
 from ft_math import ft_sqrt, ft_abs, common_denominator
 
 
-
 class Polynomial:
     def __init__(self, polynomial) -> None:
         if isinstance(polynomial, str) is False:
@@ -28,7 +27,7 @@ class Polynomial:
         print(form1.format(a=self.values[2], b=b))
         denom = 2 * self.values[2]
         print(form2.format(num=b, denom=denom))
-        ret, k = common_denominator(float(denom),float(b))
+        ret, k = common_denominator(float(denom), float(b))
         if ret is True:
             b = int(b / k)
             denom = int(denom / k)
@@ -66,7 +65,7 @@ class Polynomial:
             if isinstance(num, int) or num.is_integer():
                 num = int(num)
                 print(form4.format(k=data['k'], num=num, denom=denom))
-            ret, k = common_denominator(float(denom),float(num))
+            ret, k = common_denominator(float(denom), float(num))
             if ret is True:
                 num = int(num / k)
                 denom = int(denom / k)
@@ -77,7 +76,7 @@ class Polynomial:
             print(form5.format(k=data['k'], result=result))
             if i == 0:
                 print('')
-        
+
     def negative_delta_step(self, delta):
         form1 = "x{k} = ({b} {sign} i * sqrt({delta})) / (2 * {a})"
         form2 = "x{k} = ({b} {sign} i * sqrt({delta})) / {denom}"
@@ -97,7 +96,6 @@ class Polynomial:
             if i == 0:
                 print('')
 
-
     def show_step(self, delta):
         if isinstance(delta, float) and delta.is_integer():
             delta = int(delta)
@@ -110,7 +108,6 @@ class Polynomial:
         else:
             print("Discriminant equal to zero, the solution is:")
             self.null_delta_step()
-
 
     def resolve(self):
         if self.degree > 2:
@@ -127,7 +124,7 @@ class Polynomial:
             b = -self.values[0]
             denom = self.values[1]
             x = b / denom
-            ret, k = common_denominator(float(denom),float(b))
+            ret, k = common_denominator(float(denom), float(b))
             print("x = {} / {}".format(-self.values[0], self.values[1]))
             if ret is True:
                 b = int(b / k)
@@ -135,11 +132,12 @@ class Polynomial:
                 print("x = {} / {}".format(x))
             print("x = {}".format(x))
             return True
-        delta = self.values[1] * self.values[1] - 4 * self.values[2] * self.values[0]
+        delta = self.values[1] * self.values[1] - 4 * \
+            self.values[2] * self.values[0]
         print("Δ = {}^2 - 4 * {} * {} = {}\n".format(self.values[1],
-                                                  self.values[2],
-                                                  self.values[0],
-                                                  delta))
+                                                     self.values[2],
+                                                     self.values[0],
+                                                     delta))
         self.show_step(delta)
         return True
 
