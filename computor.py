@@ -6,6 +6,7 @@ if __name__ == "__main__":
         try:
             eq = Polynomial(sys.argv[1])
             eq.show_info()
+            print()
             eq.resolve()
         except Exception as err:
             print('Error: {}'.format(err))

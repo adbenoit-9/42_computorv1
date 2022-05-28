@@ -1,76 +1,16 @@
-import math
-from re import X
+from parsing import parse_polynomial
+from ft_math import ft_sqrt, ft_abs, common_denominator
 
-def ft_sqrt(n):
-    sqrt = n / 2.
-    while sqrt * sqrt < n:
-        sqrt += 1.
-    if sqrt * sqrt == n:
-        return True, sqrt
-    sqrt -= 1.
-    tmp = 0.
-    while tmp != sqrt:
-        tmp = sqrt
-        sqrt = (n / tmp + tmp) / 2
-    return False, sqrt
-
-
-def ft_abs(n):
-    if n > 0:
-        return n
-    return n * -1
 
 
 class Polynomial:
     def __init__(self, polynomial) -> None:
         if isinstance(polynomial, str) is False:
             raise TypeError("Only str is accepted")
-        operators = "+-/*"
-        a = 1
-        n = 0
-        side = 1
-        state = 0
         try:
-            split_p = polynomial.split()
-            for x in split_p:
-                if x.startswith('X^') and int(x[2:]) > n:
-                    n = int(x[2:])
-            self.values = [0.] * (n + 1)
-            for x in split_p:
-                if x.startswith('X^'):
-                    if state != 2:
-                        raise ValueError('Invalid Polynomial')
-                    self.values[int(x[2:])] += a
-                    a = 1
-                    state = 0
-                elif x.startswith('X'):
-                    if state != 2:
-                        raise ValueError('Invalid Polynomial')
-                    self.values[1] += a
-                    a = 1
-                    state = 0
-                elif x in operators:
-                    if x == '-':
-                        a = -1 * side
-                    elif x == '+':
-                        a = 1 * side
-                    else:
-                        if state != 1:
-                            raise ValueError('Invalid Polynomial')
-                        state += 1
-                elif x == '=':
-                    if side == -1 or state > 1:
-                        raise ValueError('Invalid Polynomial')
-                    side = -1
-                    a = -1
-                else:
-                    if state != 0:
-                        self.values[0] += tmp
-                        a = 1
-                        state = 0
-                    state += 1
-                    a *= float(x)
-                    tmp = a
+            self.values = parse_polynomial(polynomial)
+            if self.values is None:
+                raise ValueError('Invalid Polynomial')
             self.degree = len(self.values) - 1
             while self.values[self.degree] == 0. and self.degree > 0:
                 self.degree -= 1
@@ -80,6 +20,98 @@ class Polynomial:
     def reduce_form(self):
         return self.__str__()
 
+    def null_delta_step(self):
+        form1 = "x = {b} / (2 * {a})"
+        form2 = "x = {num} / {denom}"
+        form3 = "x = {result}"
+        b = -self.values[1]
+        print(form1.format(a=self.values[2], b=b))
+        denom = 2 * self.values[2]
+        print(form2.format(num=b, denom=denom))
+        ret, k = common_denominator(float(denom),float(b))
+        if ret is True:
+            b = int(b / k)
+            denom = int(denom / k)
+            print(form2.format(num=b, denom=denom))
+        result = b / denom
+        if result.is_integer():
+            result = int(result)
+        print(form3.format(result=result))
+
+    def positive_delta_step(self, delta):
+        form1 = "x{k} = ({b} {sign} sqrt({delta})) / (2 * {a})"
+        form2 = "x{k} = ({b} {sign} sqrt({delta})) / {denom}"
+        form3 = "x{k} = ({b} {sign} {sqrt_delta}) / {denom}"
+        form4 = "x{k} = {num} / {denom}"
+        form5 = "x{k} = {result}"
+        for i in range(2):
+            data = {
+                'k': i + 1,
+                'b': -self.values[1],
+                'sign': '-' if i == 0 else '+',
+                'delta': delta,
+                'sqrt_delta': ft_sqrt(delta),
+                'a': self.values[2]
+            }
+            print(form1.format(**data))
+            denom = 2 * data['a']
+            if isinstance(data['sqrt_delta'], float):
+                print(form2.format(**data, denom=denom))
+            else:
+                print(form3.format(**data, denom=denom))
+            if i == 0:
+                num = data['b'] - data['sqrt_delta']
+            else:
+                num = data['b'] + data['sqrt_delta']
+            if isinstance(num, int) or num.is_integer():
+                num = int(num)
+                print(form4.format(k=data['k'], num=num, denom=denom))
+            ret, k = common_denominator(float(denom),float(num))
+            if ret is True:
+                num = int(num / k)
+                denom = int(denom / k)
+                print(form4.format(k=data['k'], num=num, denom=denom))
+            result = num / denom
+            if result.is_integer():
+                result = int(result)
+            print(form5.format(k=data['k'], result=result))
+            if i == 0:
+                print('')
+        
+    def negative_delta_step(self, delta):
+        form1 = "x{k} = ({b} {sign} i * sqrt({delta})) / (2 * {a})"
+        form2 = "x{k} = ({b} {sign} i * sqrt({delta})) / {denom}"
+        form3 = "x{k} = ({b} {sign} i * {sqrt_delta}) / {denom}"
+        for i in range(2):
+            data = {
+                'k': i + 1,
+                'b': -self.values[1],
+                'sign': '-' if i == 0 else '+',
+                'delta': -delta,
+                'sqrt_delta': ft_sqrt(-delta),
+                'a': self.values[2]
+            }
+            print(form1.format(**data))
+            print(form2.format(**data, denom=2 * data['a']))
+            print(form3.format(**data, denom=2 * data['a']))
+            if i == 0:
+                print('')
+
+
+    def show_step(self, delta):
+        if isinstance(delta, float) and delta.is_integer():
+            delta = int(delta)
+        if delta > 0:
+            print("Discriminant is strictly positive, the two solutions are:")
+            self.positive_delta_step(delta)
+        elif delta < 0:
+            print('Discriminant is strictly negative, the two solutions are:')
+            self.negative_delta_step(delta)
+        else:
+            print("Discriminant equal to zero, the solution is:")
+            self.null_delta_step()
+
+
     def resolve(self):
         if self.degree > 2:
             print("The polynomial degree is strictly greater than 2, I can't solve.")
@@ -88,53 +120,27 @@ class Polynomial:
             if self.values[0] != 0.:
                 print("No solution.")
             else:
-                print('Each real number is a solution')
+                print('Each real number is a solution.')
             return True
         elif self.degree == 1:
-            x = self.values[0] * -1. / self.values[1]
-            print("The solution is:\n{}".format(x))
+            print("The solution is:")
+            b = -self.values[0]
+            denom = self.values[1]
+            x = b / denom
+            ret, k = common_denominator(float(denom),float(b))
+            print("x = {} / {}".format(-self.values[0], self.values[1]))
+            if ret is True:
+                b = int(b / k)
+                denom = int(denom / k)
+                print("x = {} / {}".format(x))
+            print("x = {}".format(x))
             return True
         delta = self.values[1] * self.values[1] - 4 * self.values[2] * self.values[0]
-        print("delta = {}^2 - 4 * {} * {} = {}".format(self.values[1],
+        print("Δ = {}^2 - 4 * {} * {} = {}\n".format(self.values[1],
                                                   self.values[2],
                                                   self.values[0],
                                                   delta))
-        if delta > 0:
-            print("Discriminant is strictly positive, the two solutions are:")
-            print("x1 = ({} - sqrt({})) / (2 * {})".format(self.values[1] * -1,
-                                                           delta,
-                                                           self.values[2]))
-            x1 = (self.values[1] * -1 - ft_sqrt(delta)[1]) / (2 * self.values[2])
-            print("   = {}".format(x1))
-            print("x2 = ({} + sqrt({})) / (2 * {})".format(self.values[1] * -1,
-                                                           delta,
-                                                           self.values[2]))
-            x2 = (self.values[1] * -1 + ft_sqrt(delta)[1]) / (2 * self.values[2])
-            print("   = {}".format(x2))
-        elif delta == 0:
-            x = (self.values[1] * -1) / (2 * self.values[2])
-            print("Discriminant equal to zero, the solution is:\n{}".format(x))
-        else:
-            print('Discriminant is strictly negative, the two solutions are:')
-            is_int, sqrt_delta = ft_sqrt(delta * -1)
-            print("x1 = ({} - i * sqrt({})) / (2 * {})".format(self.values[1] * -1,
-                                                           delta * -1,
-                                                           self.values[2]))
-            if is_int is True:
-                print("   = ({} - i * {:.0f}) / {}".format(self.values[1] * -1,
-                    sqrt_delta, self.values[2] * 2))
-            else:
-                print("   = ({} - i * sqrt({})) / {}".format(self.values[1] * -1,
-                    -1 * delta, self.values[2] * 2))
-            print("x2 = ({} + i * sqrt({})) / (2 * {})".format(self.values[1] * -1,
-                                                           delta * -1,
-                                                           self.values[2]))
-            if is_int is True:
-                print("   = ({} + i * {:.0f}) / {}".format(self.values[1] * -1,
-                    sqrt_delta, self.values[2] * 2))
-            else:
-                print("   = ({} + i * sqrt({})) / {}".format(self.values[1] * -1,
-                    -1 * delta, self.values[2] * 2))
+        self.show_step(delta)
         return True
 
     def show_info(self):
@@ -143,13 +149,10 @@ class Polynomial:
 
     def __str__(self):
         polynomial = ""
-        for i, val in enumerate(self.values):
-            op = '-' if val < 0 else '+'
-            if val != 0.:
-                if i != 0 or op == '-':
-                    polynomial += "{} ".format(op)
-                polynomial += "{} * X^{} ".format(ft_abs(val), i)
-        if len(polynomial) == 0:
-            polynomial += "0 * X^0 "
+        for i in range(self.degree + 1):
+            op = '-' if self.values[i] < 0 else '+'
+            if i != 0 or op == '-':
+                polynomial += "{} ".format(op)
+            polynomial += "{} * X^{} ".format(ft_abs(self.values[i]), i)
         polynomial += "= 0"
         return polynomial

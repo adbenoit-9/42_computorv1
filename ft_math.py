@@ -1,0 +1,31 @@
+def ft_sqrt(n):
+    if n < 0:
+        return None
+    sqrt = n / 2.
+    while sqrt * sqrt < n:
+        sqrt += 1.
+    if sqrt * sqrt == n:
+        return sqrt
+    sqrt -= 1.
+    tmp = 0.
+    while tmp != sqrt:
+        tmp = sqrt
+        sqrt = (n / tmp + tmp) / 2
+    if sqrt.is_integer():
+        return int(sqrt)
+    return sqrt
+
+
+def ft_abs(n):
+    if n > 0:
+        return n
+    return n * -1
+
+
+def common_denominator(x, y):
+    if x.is_integer() and y.is_integer():
+        n = min(ft_abs(int(x)), ft_abs(int(y)))
+        for i in range(n, 1, -1):
+            if x % i == 0 and y % i == 0:
+                return True, i
+    return False, 1
