@@ -22,6 +22,8 @@ x = -4 / (2 * 4)
 x = -4 / 8
 x = -1 / 2
 x = -0.5
+```
+```
 $ python3 computor.py "13 * X^2 + 2 * X^1 + 4 = 2" 
 Reduced form: 2 * X^0 + 2 * X^1 + 13 * X^2 = 0
 Polynomial degree: 2
