@@ -53,9 +53,28 @@ def parse_equal(values, x, state, val, side):
     return State.BEGIN, values, val, -1
 
 
+def fix_polynomial(eq):
+    n = len(eq)
+    i = 0
+    while i < n:
+        add = 1
+        if eq[i] in "-+=*X":
+            if i != 0 and eq[i - 1] != ' ':
+                eq = eq[:i] + ' ' + eq[i:]
+                i += 1
+                n += 1
+            if i != n - 1 and eq[i + 1] != ' ' and eq[i] != 'X':
+                eq = eq[:i + 1] + ' ' + eq[i + 1:]
+                i += 1
+                n += 1
+        i += add
+    return eq
+
+
 def parse_polynomial(polynomial):
-    state = State.BEGIN
+    polynomial = fix_polynomial(polynomial)
     split_p = polynomial.split()
+    state = State.BEGIN
     side = 1
     val = 1.
     n = 0
