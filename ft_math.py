@@ -22,7 +22,7 @@ def ft_abs(n):
     return n * -1
 
 
-def common_denominator(x, y):
+def pgcd(x, y):
     if x.is_integer() and y.is_integer():
         n = min(ft_abs(int(x)), ft_abs(int(y)))
         for i in range(n, 1, -1):
