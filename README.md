@@ -24,18 +24,18 @@ x = -1 / 2
 x = -0.5
 ```
 ```
-$ python3 computor.py "13 * X^2 + 2 * X^1 + 4 = 2" 
+$ python3 computor.py "13 * X^2 + 2 * X + 4 = 2"
 Reduced form: 2 * X^0 + 2 * X^1 + 13 * X^2 = 0
 Polynomial degree: 2
 
 Δ = 2^2 - 4 * 13 * 2 = -100
 
 Discriminant is strictly negative, the two solutions are:
-x1 = (-2 - i * sqrt(100)) / (2 * 13)
-x1 = (-2 - i * sqrt(100)) / 26
-x1 = (-2 - i * 10) / 26
+x1 = (-2 - i * √100) / (2 * 13)
+x1 = (-2 - i * √100) / 26
+x1 = -1 / 13 - i * 5 / 13
 
-x2 = (-2 + i * sqrt(100)) / (2 * 13)
-x2 = (-2 + i * sqrt(100)) / 26
-x2 = (-2 + i * 10) / 26
+x2 = (-2 + i * √100) / (2 * 13)
+x2 = (-2 + i * √100) / 26
+x2 = -1 / 13 + i * 5 / 13
 ```

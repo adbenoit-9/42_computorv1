@@ -38,8 +38,8 @@ class Polynomial:
         print(form3.format(result=result))
 
     def positive_delta_step(self, delta):
-        form1 = "x{k} = ({b} {sign} sqrt({delta})) / (2 * {a})"
-        form2 = "x{k} = ({b} {sign} sqrt({delta})) / {denom}"
+        form1 = "x{k} = ({b} {sign} √{delta}) / (2 * {a})"
+        form2 = "x{k} = ({b} {sign} √{delta}) / {denom}"
         form3 = "x{k} = ({b} {sign} {sqrt_delta}) / {denom}"
         form4 = "x{k} = {num} / {denom}"
         form5 = "x{k} = {result}"
@@ -78,9 +78,9 @@ class Polynomial:
                 print('')
 
     def negative_delta_step(self, delta):
-        form1 = "x{k} = ({b} {sign} i * sqrt({delta})) / (2 * {a})"
-        form2 = "x{k} = ({b} {sign} i * sqrt({delta})) / {denom}"
-        form3 = "x{k} = {b} / {d1} {sign} i * sqrt({delta}) / {d2}"
+        form1 = "x{k} = ({b} {sign} i * √{delta}) / (2 * {a})"
+        form2 = "x{k} = ({b} {sign} i * √{delta}) / {denom}"
+        form3 = "x{k} = {b} / {d1} {sign} i * √{delta} / {d2}"
         form4 = "x{k} = {b} / {d1} {sign} i * {sqrt_delta} / {d2}"
         for i in range(2):
             data = {
@@ -99,11 +99,15 @@ class Polynomial:
             d2 = data['denom']
             if ret is True:
                 data['b'] /= k
+                data['b'] = int(data['b'])
                 d1 /= k
+                d1 = int(d1)
             ret2, k2 = common_denominator(float(data['sqrt_delta']), float(data['denom']))
             if ret2 is True:
                 data['sqrt_delta'] /= k2
+                data['sqrt_delta'] = int(data['sqrt_delta'])
                 d2 /= k2
+                d2 = int(d2)
                 print(form4.format(**data, d1=d1, d2=d2))
             else:
                 print(form3.format(**data, d1=d1, d2=d2))
