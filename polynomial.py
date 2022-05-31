@@ -111,8 +111,6 @@ class Polynomial:
                 print(form4.format(**data, d1=d1, d2=d2))
             else:
                 print(form3.format(**data, d1=d1, d2=d2))
-
-
             if i == 0:
                 print('')
 
