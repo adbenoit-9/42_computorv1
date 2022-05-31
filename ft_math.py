@@ -23,9 +23,13 @@ def ft_abs(n):
 
 
 def pgcd(x, y):
+    x = float(x)
+    y = float(y)
     if x.is_integer() and y.is_integer():
         n = min(ft_abs(int(x)), ft_abs(int(y)))
         for i in range(n, 1, -1):
             if x % i == 0 and y % i == 0:
+                if x < 0 and y < 0:
+                    return True, -i
                 return True, i
     return False, 1
